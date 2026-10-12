@@ -18,16 +18,19 @@ const ENGINES: Record<EngineId, AnyEngine> = {
   tally: tallyEngine,
 };
 
+/** Looks up the scoring engine for an engine id. */
 export function getEngine(id: EngineId): AnyEngine {
   return ENGINES[id];
 }
 
+/** Rebuilds match state by applying every event, in order, to a fresh `init` state. */
 export function replay<C, S>(engine: Engine<C, S>, ctx: MatchContext<C>, events: readonly MatchEvent[]): S {
   const state = engine.init(ctx);
   for (const e of events) engine.apply(state, e, ctx);
   return state;
 }
 
+/** Replays an event log for the given engine and returns the final state with its scoreboard summary. */
 export function computeMatch(
   engineId: EngineId,
   participants: Participant[],

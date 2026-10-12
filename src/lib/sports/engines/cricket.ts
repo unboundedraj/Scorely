@@ -164,29 +164,35 @@ export type CricketPhase = "openers" | "batter" | "bowler" | "play" | "break" | 
 // Helpers (also used by the UI)
 // ---------------------------------------------------------------------------
 
+/** Wickets that end an innings: one fewer than the players on a side (a batter is always left). */
 export function maxWickets(cfg: CricketConfig): number {
   return Math.max(1, cfg.playersPerSide - 1);
 }
 
+/** Overs bowled in cricket notation: 14 balls at 6 per over is "2.2"; whole overs have no decimal. */
 export function oversText(balls: number, bpo: number): string {
   const o = Math.floor(balls / bpo);
   const b = balls % bpo;
   return b === 0 ? String(o) : `${o}.${b}`;
 }
 
+/** Runs per over; 0 before the first ball. */
 export function runRate(runs: number, balls: number, bpo: number): number {
   if (balls === 0) return 0;
   return (runs / balls) * bpo;
 }
 
+/** Batting strike rate (runs per 100 balls); 0 before the first ball. */
 export function strikeRate(runs: number, balls: number): number {
   return balls === 0 ? 0 : (runs / balls) * 100;
 }
 
+/** Bowling economy (runs conceded per over); 0 before the first ball. */
 export function economy(runs: number, balls: number, bpo: number): number {
   return balls === 0 ? 0 : (runs / balls) * bpo;
 }
 
+/** The innings in progress, or the most recent one; `null` before the match starts. */
 export function currentInnings(s: CricketState): Innings | null {
   return s.innings.length ? s.innings[s.innings.length - 1] : null;
 }
@@ -196,6 +202,10 @@ function liveInnings(s: CricketState): Innings | null {
   return inn && !inn.closed && !s.result ? inn : null;
 }
 
+/**
+ * What the scorer needs next: "openers" before the first innings, "batter"/"bowler" while one
+ * is missing, "play" for normal scoring, "break" between innings and "done" once there is a result.
+ */
 export function cricketPhase(s: CricketState): CricketPhase {
   if (s.result) return "done";
   const inn = currentInnings(s);
@@ -206,6 +216,7 @@ export function cricketPhase(s: CricketState): CricketPhase {
   return "play";
 }
 
+/** Looks a player up across both rosters; "—" for no id and "Unknown" for an id not on either roster. */
 export function playerName(s: CricketState, id: string | null | undefined): string {
   if (!id) return "—";
   for (const roster of s.rosters) {
@@ -224,12 +235,14 @@ export function availableBatters(s: CricketState, inn: Innings): Player[] {
   });
 }
 
+/** True when the bowler has used their maximum overs (`bowlerMaxOvers`); always false when no quota is set. */
 export function bowlerQuotaReached(cfg: CricketConfig, inn: Innings, id: string): boolean {
   if (!cfg.bowlerMaxOvers) return false;
   const card = inn.bowlers[id];
   return !!card && card.balls >= cfg.bowlerMaxOvers * cfg.ballsPerOver;
 }
 
+/** Scorecard wording for a dismissal, e.g. "c Smith b Jones" or "run out (Patel)"; "not out" when still batting. */
 export function dismissalText(s: CricketState, d: Dismissal | null, retiredHurt = false): string {
   if (!d) return retiredHurt ? "retired hurt" : "not out";
   const b = playerName(s, d.bowlerId);
@@ -261,6 +274,7 @@ export function recentOver(inn: Innings, bpo: number): Delivery[] {
   return inn.deliveries.filter((d) => d.over === overIdx);
 }
 
+/** Deliveries grouped by over (ascending), with the bowler and the runs and wickets in each. */
 export function oversList(inn: Innings): { over: number; bowlerId: string; deliveries: Delivery[]; runs: number; wickets: number }[] {
   const map = new Map<number, Delivery[]>();
   for (const d of inn.deliveries) {
