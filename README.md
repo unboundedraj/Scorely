@@ -58,6 +58,17 @@ Open http://localhost:3000. **The app works before Supabase is connected** — m
 
 Email/password sign-up, magic links and password reset all work out of the box. If *Confirm email* is enabled on the project, new users get a confirmation link that lands on `/auth/confirm`.
 
+## Environment variables
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | For accounts & live sharing | Project URL (`https://<ref>.supabase.co`) |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` | For accounts & live sharing | Public API key. The publishable key wins if both are set |
+| `NEXT_PUBLIC_SITE_URL` | No | Public URL used for share-card metadata. Defaults to `http://localhost:3000` |
+| `SUPABASE_DB_URL` | Only for `db:push` / `db:check` | Postgres connection string. Never expose it to the browser |
+
+`NEXT_PUBLIC_*` values are inlined at build time, so restart `npm run dev` (or rebuild) after changing them. With no Supabase variables the app runs in on-device mode.
+
 ## Shared-project safety
 
 The migration was written for a Supabase project that other apps also use:
