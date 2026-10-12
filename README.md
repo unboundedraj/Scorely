@@ -129,3 +129,16 @@ tests/                    engine tests (vitest)
 3. Add tests under `tests/`.
 
 No database change is needed. Sport ids are free-form (`^[a-z_]{2,32}$`), and rules live in `scorely_matches.config`.
+
+## Deploying
+
+Any host that runs Next.js works; [Vercel](https://vercel.com) is the zero-config option.
+
+1. Set the [environment variables](#environment-variables) on the host (skip them entirely to deploy an on-device-only app).
+2. Run the database migration once (`npm run db:push`, or paste the SQL into the Supabase editor).
+3. Add `https://<your-domain>/auth/confirm` to the Supabase **Redirect URLs**.
+4. Set `NEXT_PUBLIC_SITE_URL` to your public URL so share cards and QR codes point to the right place.
+
+## Contributing
+
+Issues and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for setup and the checks to run first. Please report security problems privately as described in [SECURITY.md](SECURITY.md).
