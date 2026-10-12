@@ -40,3 +40,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+
+# os
+Thumbs.db
+Desktop.ini
+
+# logs
+*.log
+
+# local scratch / coverage output
+.nyc_output/
+*.lcov
